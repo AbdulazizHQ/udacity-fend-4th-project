@@ -1,6 +1,16 @@
 var path = require('path')
 const express = require('express')
 const mockAPIResponse = require('./mockAPI.js')
+const fetch = require("node-fetch")
+
+const dotenv = require('dotenv');
+const { response } = require('express');
+dotenv.config();
+const apiKey = process.env.API_KEY
+
+console.log(`My API key is: ${apiKey}`)
+
+const apiURL = 'https://api.meaningcloud.com/sentiment-2.1?'
 
 const app = express()
 
@@ -19,7 +29,25 @@ app.listen(8081, function () {
 })
 
 app.get('/test', function (req, res) {
-    res.format({
-        'application/json': () => res.send(mockAPIResponse)
-    })
+    res.send(mockAPIResponse)
+})
+
+app.post('/analyze', (req, res) => {
+    const url = req.query.url
+    const params = new URLSearchParams({
+        key: apiKey,
+        lang: 'en',
+        url: url
+    });
+    fetch(apiURL + params, {
+        method: 'POST'
+      })
+      .then(response => response.json())
+      .then(body => {
+            res.header('Access-Control-Allow-Origin', '*')
+            res.header('Access-Control-Allow-Methods', 'POST')
+            res.header('Access-Control-Allow-Headers', 'Content-Type')
+            res.send({sentiment: body.score_tag, confidence: body.confidence})
+        })
+      .catch(err => console.log(err))
 })
