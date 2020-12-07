@@ -20,7 +20,7 @@ console.log(__dirname)
 
 app.get('/', function (req, res) {
     // res.sendFile('dist/index.html')
-    res.sendFile(path.resolve('src/client/views/index.html'))
+    res.sendFile(path.resolve('dist/index.html'))
 })
 
 // designates what port the app will listen to for incoming requests
@@ -47,7 +47,12 @@ app.post('/analyze', (req, res) => {
             res.header('Access-Control-Allow-Origin', '*')
             res.header('Access-Control-Allow-Methods', 'POST')
             res.header('Access-Control-Allow-Headers', 'Content-Type')
-            res.send({sentiment: body.score_tag, confidence: body.confidence})
+            res.send({
+                score_tag: body.score_tag,
+                confidence: body.confidence,
+                agreement: body.agreement,
+                subjectivity: body.subjectivity,
+                irony: body.irony})
         })
       .catch(err => console.log(err))
 })
